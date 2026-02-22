@@ -26,11 +26,12 @@ import kotlinx.coroutines.launch
 class AccessibilityController : AccessibilityService() {
     
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    @Volatile
     private var sessionEngine: SessionEngine? = null
     
     /**
      * Inject SessionEngine dependency.
-     * Should be called by app module during initialization.
+     * Must be called before service starts receiving events.
      */
     fun setSessionEngine(engine: SessionEngine) {
         sessionEngine = engine

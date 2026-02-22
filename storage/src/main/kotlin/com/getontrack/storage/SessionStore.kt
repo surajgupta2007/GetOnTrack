@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.getontrack.core.SessionState
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * Encrypted local storage for session state.
@@ -23,6 +25,7 @@ import com.getontrack.core.SessionState
 class SessionStore(context: Context) {
     
     private val sharedPreferences: SharedPreferences
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
     
     companion object {
         private const val PREFS_FILE_NAME = "session_store_encrypted"
@@ -118,10 +121,7 @@ class SessionStore(context: Context) {
      * Get current date string for comparison.
      */
     private fun getCurrentDate(): String {
-        val calendar = java.util.Calendar.getInstance()
-        return "${calendar.get(java.util.Calendar.YEAR)}-" +
-                "${calendar.get(java.util.Calendar.MONTH)}-" +
-                "${calendar.get(java.util.Calendar.DAY_OF_MONTH)}"
+        return dateFormat.format(Date())
     }
     
     /**

@@ -47,7 +47,9 @@ class ScreenCaptureService : Service() {
     private var imageReader: ImageReader? = null
     private var captureJob: Job? = null
     
+    @Volatile
     private var sessionEngine: SessionEngine? = null
+    @Volatile
     private var contentDetector: ContentDetector? = null
     
     companion object {
@@ -60,7 +62,7 @@ class ScreenCaptureService : Service() {
     }
     
     /**
-     * Set dependencies. Should be called before starting service.
+     * Set dependencies. Must be called before starting service.
      */
     fun setDependencies(engine: SessionEngine, detector: ContentDetector) {
         sessionEngine = engine

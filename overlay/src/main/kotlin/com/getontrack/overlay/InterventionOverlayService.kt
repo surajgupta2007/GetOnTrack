@@ -37,7 +37,9 @@ class InterventionOverlayService : Service(), SessionObserver {
     
     private var windowManager: WindowManager? = null
     private var overlayView: View? = null
+    @Volatile
     private var sessionEngine: SessionEngine? = null
+    private var maxOverridesPerDay: Int = 5 // Default, updated when engine is set
     
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var timerJob: Job? = null
@@ -48,9 +50,11 @@ class InterventionOverlayService : Service(), SessionObserver {
     
     /**
      * Set SessionEngine dependency.
+     * Must be called before service receives any state updates.
      */
-    fun setSessionEngine(engine: SessionEngine) {
+    fun setSessionEngine(engine: SessionEngine, maxOverrides: Int) {
         sessionEngine = engine
+        maxOverridesPerDay = maxOverrides
         engine.addObserver(this)
     }
     
@@ -88,7 +92,7 @@ class InterventionOverlayService : Service(), SessionObserver {
         messageText?.text = "Take a break from distractions"
         
         // Update override button based on remaining overrides
-        val canOverride = state.overridesUsed < getMaxOverrides()
+        val canOverride = state.overridesUsed < maxOverridesPerDay
         overrideButton?.isEnabled = canOverride
         overrideButton?.text = if (canOverride) {
             "Override (${state.overridesUsed} used today)"
@@ -192,12 +196,6 @@ class InterventionOverlayService : Service(), SessionObserver {
             overlayView = null
         }
     }
-    
-    /**
-     * Get max overrides from policy (hardcoded for now).
-     * In production, would query from SessionEngine.
-     */
-    private fun getMaxOverrides(): Int = 5
     
     override fun onDestroy() {
         super.onDestroy()

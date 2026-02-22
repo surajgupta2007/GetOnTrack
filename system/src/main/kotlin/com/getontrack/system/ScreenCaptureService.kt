@@ -66,7 +66,7 @@ class ScreenCaptureService : Service() {
         val notification = createNotification()
         startForeground(NOTIFICATION_ID, notification)
         
-        // Start capturing in the intent contains projection data
+        // Start capturing if the intent contains projection data
         intent?.let { startCapture(it) }
         
         return START_STICKY

@@ -56,7 +56,10 @@ class SessionStateMachine(private val policy: BlockingPolicy) {
         return when (currentState) {
             is SessionState.Monitoring -> {
                 if (event.confidence >= policy.threshold()) {
-                    SessionState.BlockTriggered(confidence = event.confidence)
+                    SessionState.BlockTriggered(
+                        confidence = event.confidence,
+                        overridesUsed = currentState.overridesUsed
+                    )
                 } else {
                     currentState // Below threshold, keep monitoring
                 }
@@ -73,22 +76,17 @@ class SessionStateMachine(private val policy: BlockingPolicy) {
         return when (currentState) {
             is SessionState.BlockTriggered -> {
                 // Check if user has overrides remaining
-                if (currentState.confidence >= policy.threshold()) {
-                    val newOverridesUsed = 0 // Will be incremented from previous state
-                    if (newOverridesUsed < policy.maxOverridesPerDay()) {
-                        SessionState.Override(
-                            remainingMs = policy.cooldownDurationMs(),
-                            overridesUsed = newOverridesUsed + 1
-                        )
-                    } else {
-                        // No overrides left, force cooldown
-                        SessionState.Cooldown(
-                            remainingMs = policy.cooldownDurationMs(),
-                            overridesUsed = newOverridesUsed
-                        )
-                    }
+                if (currentState.overridesUsed < policy.maxOverridesPerDay()) {
+                    SessionState.Override(
+                        remainingMs = policy.cooldownDurationMs(),
+                        overridesUsed = currentState.overridesUsed + 1
+                    )
                 } else {
-                    currentState
+                    // No overrides left, force cooldown
+                    SessionState.Cooldown(
+                        remainingMs = policy.cooldownDurationMs(),
+                        overridesUsed = currentState.overridesUsed
+                    )
                 }
             }
             is SessionState.Cooldown -> {

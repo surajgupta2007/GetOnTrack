@@ -153,6 +153,7 @@ class InterventionOverlayService : Service(), SessionObserver {
         
         val timerText = TextView(this).apply {
             id = View.generateViewId()
+            tag = "timer"
             text = "00:00"
             textSize = 48f
             setTextColor(android.graphics.Color.WHITE)

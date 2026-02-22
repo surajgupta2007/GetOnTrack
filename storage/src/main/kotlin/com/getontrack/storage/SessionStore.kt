@@ -76,7 +76,7 @@ class SessionStore(context: Context) {
         val stateString = when (state) {
             is SessionState.Idle -> "idle"
             is SessionState.Monitoring -> "monitoring:${state.overridesUsed}"
-            is SessionState.BlockTriggered -> "block:${state.confidence}"
+            is SessionState.BlockTriggered -> "block:${state.confidence}:${state.overridesUsed}"
             is SessionState.Cooldown -> "cooldown:${state.remainingMs}:${state.overridesUsed}"
             is SessionState.Override -> "override:${state.remainingMs}:${state.overridesUsed}"
         }
@@ -109,7 +109,10 @@ class SessionStore(context: Context) {
         return when (parts[0]) {
             "idle" -> SessionState.Idle
             "monitoring" -> SessionState.Monitoring(parts.getOrNull(1)?.toIntOrNull() ?: 0)
-            "block" -> SessionState.BlockTriggered(parts.getOrNull(1)?.toFloatOrNull() ?: 0f)
+            "block" -> SessionState.BlockTriggered(
+                confidence = parts.getOrNull(1)?.toFloatOrNull() ?: 0f,
+                overridesUsed = parts.getOrNull(2)?.toIntOrNull() ?: 0
+            )
             "cooldown" -> SessionState.Cooldown(
                 remainingMs = parts.getOrNull(1)?.toLongOrNull() ?: 0L,
                 overridesUsed = parts.getOrNull(2)?.toIntOrNull() ?: 0

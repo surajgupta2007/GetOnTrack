@@ -21,8 +21,9 @@ sealed class SessionState {
      * Block is triggered when distraction detected above threshold.
      *
      * @property confidence Detection confidence level (0.0 to 1.0).
+     * @property overridesUsed Number of manual overrides used in current session period.
      */
-    data class BlockTriggered(val confidence: Float) : SessionState()
+    data class BlockTriggered(val confidence: Float, val overridesUsed: Int = 0) : SessionState()
 
     /**
      * Cooldown period after block - user must wait before continuing.

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    
+    <!-- Explicitly NO INTERNET permission per requirements -->
+
+    <application
+        android:name=".GetOnTrackApplication"
+        android:allowBackup="false"
+        android:icon="@android:drawable/ic_menu_view"
+        android:label="GetOnTrack"
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="false"
+        tools:targetApi="31">
+
+        <!-- Main Activity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Accessibility Service -->
+        <service
+            android:name="com.getontrack.system.AccessibilityController"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <!-- Screen Capture Service -->
+        <service
+            android:name="com.getontrack.system.ScreenCaptureService"
+            android:foregroundServiceType="mediaProjection"
+            android:exported="false" />
+
+        <!-- Intervention Overlay Service -->
+        <service
+            android:name="com.getontrack.overlay.InterventionOverlayService"
+            android:exported="false" />
+
+    </application>
+
+</manifest>
